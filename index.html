@@ -1,0 +1,155 @@
+<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+<style>
+@page {
+    /* dimensions for the whole page */
+    size: A4;
+    margin: 0mm;
+}
+.page {
+    display:block;
+    page-break-after: always;
+    position: relative;
+    width: 200mm;
+    height: 280mm;
+}
+.label {
+    display:block;position:absolute;
+    margin: 0;
+    width:89mm;
+    height:30mm;
+}
+.label p {
+    margin-block-start: 0.5em;
+    margin-block-end: 0.5em;
+}
+</style>
+<script>
+  var labelx = 0;
+  var labely = 0;
+  var html = "";
+  
+  
+  function pageBreak() {
+    labelx = 0;
+    labely = 0; // new page
+    html += `</div><div class="page">\n`;
+  }
+  
+  function addLabel(label) {
+    html += `<div class="label" style="left:${4.5 + labelx*90}mm;top:${13.5+labely*30}mm">${label}</div>\n`;
+    labelx++; // new column
+    if (labelx>=2) { 
+      labelx = 0; // new row
+      labely++;
+      if (labely>=8) { 
+        pageBreak(); // new page
+      }
+    }
+  }
+  
+  // decode a CSV line - ensure we cope with quotes!
+  function decodeCSVLine(line) {
+    var csv = line.split(",");
+    // merge quotes
+    for (var i=0;i<csv.length;i++) {
+      if (csv[i].startsWith('"') && (csv[i].length==1 || !csv[i].endsWith('"'))) {
+        csv[i] += ","+csv[i+1];
+        csv.splice(i+1,1);
+        i--;
+      }
+    }
+    // remove quotes
+    for (var i=0;i<csv.length;i++) {
+      if (csv[i].startsWith('"') && csv[i].endsWith('"')) {
+        csv[i] = csv[i].slice(1,-1);
+      }
+    }
+    return csv;
+  }
+  
+  function updatePage(csvText) {
+    // clear all
+    var contents = document.getElementById("contents");
+    contents.innerHTML = "Working...";
+    html = `<div class="page">\n`;
+    // start writing
+    // decode file
+    var pupils = csvText.split("\n");
+    var headers = decodeCSVLine(pupils.shift());
+    pupils = pupils.map( l => decodeCSVLine(l) );
+    console.log("Headers: ",headers);
+    // work out subjects
+    var subjects = [];
+    var subjectExternalEstimate = {};
+    var subjectPredictedGrade = {};
+    var subjectTeacher = {};
+    headers.forEach( (heading,idx) => {
+      var h = heading.split(":");
+      if (h.length==1) return; // not a subject
+      var subject = h[0].trim();
+      if (!subjects.includes(subject))
+        subjects.push(subject);
+      var type = h[1].trim();
+      if (type=="External Estimate") subjectExternalEstimate[subject] = idx;
+      else if (type=="Teacher(s)") subjectTeacher[subject] = idx;
+      else if (type=="Predicted Grade") subjectPredictedGrade[subject] = idx;
+      else console.warn("UNKNOWN HEADING", heading);
+    });
+    console.log("Subjects: ",subjects);
+    // for each subject
+    subjects.forEach(subject => {
+      // work out what heading each is under
+      var externalEstimate = subjectExternalEstimate[subject];
+      var predictedGrade = subjectPredictedGrade[subject];
+      var teacher = subjectTeacher[subject];
+      if (!teacher || !externalEstimate || !predictedGrade) {
+        console.warn(`Subject "${subject}" doesn't have Teacher + estimate + predicted columns - ignoring`);
+        return;
+      }
+      // for every pupil
+      var labels = [];
+      pupils.forEach(pupil => {
+        if (!pupil[teacher]) return; // no teacher - not taking this subject?
+        // ok - add label...
+        // Firstname, LastName Teacher
+        labels.push({teacher:pupil[teacher], html:
+        `<p><b>${pupil[1]} ${pupil[0]}</b>   Teacher - <b>${pupil[teacher]}</b></p>
+        <p>External Estimate (Target) - ${pupil[externalEstimate]}</p>
+        <p>Predicted Grade - ${pupil[predictedGrade]}</p>        
+        `});
+      });
+      // sort by teacher
+      labels.sort((a,b) => {
+        if (a.teacher < b.teacher) return -1;
+        if (a.teacher > b.teacher) return 1;
+        return 0;
+      });
+      // add labels
+      labels.forEach(label => addLabel(label.html));
+      // page break here as we're going to a new subject?
+      pageBreak();
+    });
+    contents.innerHTML = html + `</div>\n`;
+  }      
+  
+  function handleFileUpload(inp) {
+    var file = document.getElementById("file").files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      updatePage(e.target.result)
+    };
+    reader.readAsText(file);    
+
+  }
+</script>
+</head>
+<body>
+  <div id="contents">
+  <h1>Label maker</h1>
+  Upload here:
+  <input type="file" name="file" id="file">
+  <button onclick="handleFileUpload()" name="submit">Upload File</button>
+  </div>
+</body>
+</html>
