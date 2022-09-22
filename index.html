@@ -16,8 +16,9 @@
 .label {
     display:block;position:absolute;
     margin: 0;
-    width:89mm;
-    height:30mm;
+    width:98mm;
+    height:33mm;
+/*    border:1px solid black;*/
 }
 .label p {
     margin-block-start: 0.5em;
@@ -28,6 +29,12 @@
   var labelx = 0;
   var labely = 0;
   var html = "";
+  var labelWidth = 99.06;
+  var labelHeight = 33.87;
+  var labelCols = 2;
+  var labelRows = 8;
+  var labelOffsetX = ((210 - labelWidth*labelCols) / 2);
+  var labelOffsetY = ((297 - labelHeight*labelRows) / 2)
   
   
   function pageBreak() {
@@ -37,12 +44,12 @@
   }
   
   function addLabel(label) {
-    html += `<div class="label" style="left:${4.5 + labelx*90}mm;top:${13.5+labely*30}mm">${label}</div>\n`;
+    html += `<div class="label" style="left:${(labelOffsetX + labelx*labelWidth).toFixed(1)}mm;top:${(labelOffsetY+labely*labelHeight).toFixed(1)}mm">${label}</div>\n`;
     labelx++; // new column
-    if (labelx>=2) { 
+    if (labelx>=labelCols) { 
       labelx = 0; // new row
       labely++;
-      if (labely>=8) { 
+      if (labely>=labelRows) { 
         pageBreak(); // new page
       }
     }
