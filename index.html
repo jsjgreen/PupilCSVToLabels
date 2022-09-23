@@ -91,6 +91,7 @@
     var subjectExternalEstimate = {};
     var subjectPredictedGrade = {};
     var subjectTeacher = {};
+    var subjectGroup = {};
     headers.forEach( (heading,idx) => {
       var h = heading.split(":");
       if (h.length==1) return; // not a subject
@@ -101,6 +102,7 @@
       if (type=="External Estimate") subjectExternalEstimate[subject] = idx;
       else if (type=="Teacher(s)") subjectTeacher[subject] = idx;
       else if (type=="Predicted Grade") subjectPredictedGrade[subject] = idx;
+      else if (type=="Group(s)") subjectGroup[subject] = idx;
       else console.warn("UNKNOWN HEADING", heading);
     });
     console.log("Subjects: ",subjects);
@@ -110,6 +112,7 @@
       var externalEstimate = subjectExternalEstimate[subject];
       var predictedGrade = subjectPredictedGrade[subject];
       var teacher = subjectTeacher[subject];
+        var subjectGroup = subjectGroup[subject];
       if (!teacher || !externalEstimate || !predictedGrade) {
         console.warn(`Subject "${subject}" doesn't have Teacher + estimate + predicted columns - ignoring`);
         return;
@@ -122,6 +125,7 @@
         // Firstname, LastName Teacher
         labels.push({teacher:pupil[teacher], html:
         `<p><b>${pupil[1]} ${pupil[0]}</b>   Teacher - <b>${pupil[teacher]}</b></p>
+        <p>${pupil[subjectGroup]}</p>
         <p>External Estimate (Target) - ${pupil[externalEstimate]}</p>
         <p>Predicted Grade - ${pupil[predictedGrade]}</p>        
         `});
