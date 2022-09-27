@@ -112,7 +112,7 @@
       var externalEstimate = subjectExternalEstimate[subject];
       var predictedGrade = subjectPredictedGrade[subject];
       var teacher = subjectTeacher[subject];
-        var subjectGroup = subjectGroup[subject];
+      var subjectGroup = subjectGroup[subject];
       if (!teacher || !externalEstimate || !predictedGrade) {
         console.warn(`Subject "${subject}" doesn't have Teacher + estimate + predicted columns - ignoring`);
         return;
@@ -123,9 +123,10 @@
         if (!pupil[teacher]) return; // no teacher - not taking this subject?
         // ok - add label...
         // Firstname, LastName Teacher
+           //   <p>${pupil[subjectGroup]}</p>
         labels.push({teacher:pupil[teacher], html:
         `<p><b>${pupil[1]} ${pupil[0]}</b>   Teacher - <b>${pupil[teacher]}</b></p>
-        <p>${pupil[subjectGroup]}</p>
+    
         <p>External Estimate (Target) - ${pupil[externalEstimate]}</p>
         <p>Predicted Grade - ${pupil[predictedGrade]}</p> 
         <p></p>
