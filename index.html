@@ -112,9 +112,9 @@
       var externalEstimate = subjectExternalEstimate[subject];
       var predictedGrade = subjectPredictedGrade[subject];
       var teacher = subjectTeacher[subject];
-      var subjectGroup = subjectGroup[subject];
-      if (!teacher || !externalEstimate || !subjectGroup || !predictedGrade) {
-        console.warn(`Subject "${subject}" doesn't have Teacher + estimate + predicted columns - ignoring`);
+      var group = subjectGroup[subject];
+      if (!teacher || !externalEstimate || !group || !predictedGrade) {
+        console.warn(`Subject "${subject}" doesn't have Teacher + estimate + predicted + group columns - ignoring`);
         return;
       }
       // for every pupil
@@ -125,7 +125,7 @@
         // Firstname, LastName Teacher
         labels.push({teacher:pupil[teacher], html:
         `<p><b>${pupil[1]} ${pupil[0]}</b>   Teacher - <b>${pupil[teacher]}</b></p>
-         <p>${pupil[subjectGroup]}</p>
+         <p>${pupil[group]}</p>
         <p>External Estimate (Target) - ${pupil[externalEstimate]}</p>
         <p>Predicted Grade - ${pupil[predictedGrade]}</p> 
         <p></p>
