@@ -124,7 +124,7 @@
         // ok - add label...
         // Firstname, LastName Teacher
         labels.push({teacher:pupil[teacher], html:
-        `<p><b>${pupil[1]} ${pupil[0]}</b>   Teacher - <b>${pupil[teacher]}</b></p>
+        `<p><b>${pupil[1]} ${pupil[0]}</b>   Teacher - <b>${pupil[teacher].replace(/(\w)\w* (\w+)/g, "$1 $2")}</b></p>
          <p>${pupil[group]}</p>
         <p>External Estimate (Target) - ${pupil[externalEstimate]}</p>
         <p>Predicted Grade - ${pupil[predictedGrade]}</p> 
