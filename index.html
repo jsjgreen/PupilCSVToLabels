@@ -35,26 +35,26 @@
   var labelRows = 8;
   var labelOffsetX = ((210 - labelWidth*labelCols) / 2);
   var labelOffsetY = ((297 - labelHeight*labelRows) / 2)
-  
-  
+
+
   function pageBreak() {
     labelx = 0;
     labely = 0; // new page
     html += `</div><div class="page">\n`;
   }
-  
+
   function addLabel(label) {
     html += `<div class="label" style="left:${(labelOffsetX + labelx*labelWidth).toFixed(1)}mm;top:${(labelOffsetY+labely*labelHeight).toFixed(1)}mm">${label}</div>\n`;
     labelx++; // new column
-    if (labelx>=labelCols) { 
+    if (labelx>=labelCols) {
       labelx = 0; // new row
       labely++;
-      if (labely>=labelRows) { 
+      if (labely>=labelRows) {
         pageBreak(); // new page
       }
     }
   }
-  
+
   // decode a CSV line - ensure we cope with quotes!
   function decodeCSVLine(line) {
     var csv = line.split(",");
@@ -74,7 +74,16 @@
     }
     return csv;
   }
-  
+
+  function escapeHtml(unsafe) {
+    return (unsafe===undefined?"":unsafe)
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
   function updatePage(csvText) {
     // clear all
     var contents = document.getElementById("contents");
@@ -83,47 +92,31 @@
     // start writing
     // decode file
     var pupils = csvText.split("\n");
-    var headers = decodeCSVLine(pupils.shift());
+    var headers = {};
+    decodeCSVLine(pupils.shift()).forEach((h,i)=>headers[h.toLowerCase().trim().replace(" ","")]=i);
     pupils = pupils.map( l => decodeCSVLine(l) );
     console.log("Headers: ",headers);
+
     // work out subjects
     var subjects = [];
-    var subjectExternalEstimate = {};
-    var subjectPredictedGrade = {};
-    var subjectTeacher = {};
-    headers.forEach( (heading,idx) => {
-      var h = heading.split(":");
-      if (h.length==1) return; // not a subject
-      var subject = h[0].trim();
+    pupils.forEach( pupil => {
+      var subject = pupil[headers.subject];
       if (!subjects.includes(subject))
         subjects.push(subject);
-      var type = h[1].trim();
-      if (type=="External Estimate") subjectExternalEstimate[subject] = idx;
-      else if (type=="Teacher(s)") subjectTeacher[subject] = idx;
-      else if (type=="Predicted Grade") subjectPredictedGrade[subject] = idx;
-      else console.warn("UNKNOWN HEADING", heading);
     });
     console.log("Subjects: ",subjects);
     // for each subject
     subjects.forEach(subject => {
-      // work out what heading each is under
-      var externalEstimate = subjectExternalEstimate[subject];
-      var predictedGrade = subjectPredictedGrade[subject];
-      var teacher = subjectTeacher[subject];
-      if (!teacher || !externalEstimate || !predictedGrade) {
-        console.warn(`Subject "${subject}" doesn't have Teacher + estimate + predicted columns - ignoring`);
-        return;
-      }
       // for every pupil
       var labels = [];
       pupils.forEach(pupil => {
-        if (!pupil[teacher]) return; // no teacher - not taking this subject?
+        if (pupil[headers.subject] != subject) return; // not the right subject
         // ok - add label...
         // Firstname, LastName Teacher
-        labels.push({teacher:pupil[teacher], html:
-        `<p><b>${pupil[1]} ${pupil[0]}</b>   Teacher - <b>${pupil[teacher]}</b></p>
-        <p>External Estimate (Target) - ${pupil[externalEstimate]}</p>
-        <p>Predicted Grade - ${pupil[predictedGrade]}</p>        
+        labels.push({teacher:pupil[headers.teacher], html:
+        `<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>   Teacher - <b>${escapeHtml(pupil[headers.teacher])}</b></p>
+        <p>External Estimate (Target) - ${escapeHtml(pupil[headers.externalestimate])}</p>
+        <p>Predicted Grade - ${escapeHtml(pupil[headers.estimatedgrade])}</p>
         `});
       });
       // sort by teacher
@@ -138,15 +131,15 @@
       pageBreak();
     });
     contents.innerHTML = html + `</div>\n`;
-  }      
-  
+  }
+
   function handleFileUpload(inp) {
     var file = document.getElementById("file").files[0];
     var reader = new FileReader();
     reader.onload = function(e) {
       updatePage(e.target.result)
     };
-    reader.readAsText(file);    
+    reader.readAsText(file);
 
   }
 </script>
