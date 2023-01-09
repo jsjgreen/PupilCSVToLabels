@@ -113,8 +113,8 @@
         if (pupil[headers.subject] != subject) return; // not the right subject
         // ok - add label...
         // Firstname, LastName Teacher
-        labels.push({teacher:pupil[headers.teacher], html:
-        `<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>   Teacher - <b>${escapeHtml(pupil[headers.teacher])}</b></p>
+        labels.push({teacher:pupil[headers.teacher], group: pupil[headers.groupcode],
+        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>   Teacher - <b>${escapeHtml(pupil[headers.teacher])}</b></p>
         <p>External Estimate (Target) - ${escapeHtml(pupil[headers.externalestimate])}</p>
         <p>Predicted Grade - ${escapeHtml(pupil[headers.estimatedgrade])}</p>
         `});
@@ -126,7 +126,14 @@
         return 0;
       });
       // add labels
-      labels.forEach(label => addLabel(label.html));
+      var lastGroup = labels.length && labels[0].group;
+      labels.forEach(label => {
+        // This line adds a page break between groups
+        if (label.group!=lastGroup) pageBreak();
+        lastGroup = label.group;
+        // Actually output the label
+        addLabel(label.html)
+      });
       // page break here as we're going to a new subject?
       pageBreak();
     });
