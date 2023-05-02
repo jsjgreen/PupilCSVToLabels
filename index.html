@@ -113,8 +113,8 @@
         if (pupil[headers.subject] != subject) return; // not the right subject
         // ok - add label...
         // Firstname, LastName Teacher
-        labels.push({teacher:pupil[headers.teacher], group: pupil[headers.groupcode],
-        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>  Group - ${escapeHtml(pupil[headers.groupname])}</p>
+        labels.push({teacher:pupil[headers.teacher], group: pupil[headers.group],
+        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>  Group - ${escapeHtml(pupil[headers.group])}</p>
         <p><b>${escapeHtml(pupil[headers.teacher])}</b>  ${escapeHtml(pupil[headers.subject])}</p>
        <p>External Estimate (Target) - ${escapeHtml(pupil[headers.externalestimate])}</p>
         <p>Predicted Grade - ${escapeHtml(pupil[headers.estimatedgrade])}</p>
