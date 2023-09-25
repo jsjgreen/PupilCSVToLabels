@@ -114,10 +114,10 @@
         // ok - add label...
         // Firstname, LastName Teacher
         labels.push({teacher:pupil[headers.teacher], group: pupil[headers.group],
-        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>  Group - ${escapeHtml(pupil[headers.group])}</p>
+        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>  Group - ${escapeHtml(pupil[headers.group(s)])}</p>
         <p><b>${escapeHtml(pupil[headers.teacher])}</b>  ${escapeHtml(pupil[headers.subject])}</p>
        <p>Target - ${escapeHtml(pupil[headers.target])}</p>
-        <p>Predicted Grade - ${escapeHtml(pupil[headers.current])}
+        <p>Predicted Grade - ${escapeHtml(pupil[headers.current assessment])}
         <br><b>Book Check - </b> Blue <b>☐ | </b>Green <b>☐ |</b> Amber <b>☐ | </b>Red <b>☐</b></p>
         `});
       });
