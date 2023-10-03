@@ -91,33 +91,44 @@
     html = `<div class="page">\n`;
     // start writing
     // decode file
-    var pupils = csvText.split("\n");
+    var pupils = csvText.trim().split("\n");
+    var headerLine = decodeCSVLine(pupils.shift());
     var headers = {};
-    decodeCSVLine(pupils.shift()).forEach((h,i)=>headers[h.toLowerCase().trim().replace(" ","")]=i);
+    headerLine.forEach((h,i)=>headers[h.toLowerCase().replace(/[ ()]/g,"")]=i);
     pupils = pupils.map( l => decodeCSVLine(l) );
     console.log("Headers: ",headers);
 
     // work out subjects
     var subjects = [];
-    pupils.forEach( pupil => {
-      var subject = pupil[headers.subject];
+    Object.keys(headers).forEach( header => {
+      if (!header.includes(":")) return;
+      var subject = header.split(":")[0];
       if (!subjects.includes(subject))
         subjects.push(subject);
     });
-    console.log("Subjects: ",subjects);
+    console.log("Subject IDs: ",subjects);
+    // Work out 'nice' name for subject
+    var niceSubjectNames = {};
+    headerLine.forEach( header => {
+      if (!header.includes(":")) return;
+      var niceSubject = header.split(":")[0];
+      var subject = niceSubject.toLowerCase().replace(/[ ()]/g,"");
+      niceSubjectNames[subject] = niceSubject;
+    });
+    console.log("Subject Names: ",niceSubjectNames);
     // for each subject
     subjects.forEach(subject => {
       // for every pupil
       var labels = [];
       pupils.forEach(pupil => {
-        if (pupil[headers.subject] != subject) return; // not the right subject
+        if (pupil[headers[subject+":teachers"]] == "") return; // if no teachers, don't output?
         // ok - add label...
         // Firstname, LastName Teacher
-        labels.push({teacher:pupil[headers.teacher], group: pupil[headers.group],
-        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>  Group - ${escapeHtml(pupil[headers.group(s)])}</p>
-        <p><b>${escapeHtml(pupil[headers.teacher])}</b>  ${escapeHtml(pupil[headers.subject])}</p>
-       <p>Target - ${escapeHtml(pupil[headers.target])}</p>
-        <p>Predicted Grade - ${escapeHtml(pupil[headers.current assessment])}
+        labels.push({teacher:pupil[headers[subject+":teachers"]], group: pupil[headers[subject+":groups"]],
+        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>  Group - ${escapeHtml(pupil[headers[subject+":groups"]])}</p>
+        <p><b>${escapeHtml(pupil[headers[subject+":teachers"]])}</b>  ${escapeHtml(niceSubjectNames[subject])}</p>
+        <p>Target - ${escapeHtml(pupil[headers[subject+":target"]])}</p>
+        <p>Predicted Grade - ${escapeHtml(pupil[headers[subject+":currentassessment"]])}
         <br><b>Book Check - </b> Blue <b>☐ | </b>Green <b>☐ |</b> Amber <b>☐ | </b>Red <b>☐</b></p>
         `});
       });
