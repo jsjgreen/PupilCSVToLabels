@@ -130,7 +130,8 @@
       // for every pupil
       var labels = [];
       pupils.forEach(pupil => {
-        if (pupil[headers[subject+":teachers"]] == "") return; // if no teachers, don't output?
+        var teachers = pupil[headers[subject+":teachers"]];
+        if (teachers===undefined || teachers=="") return; // if no teachers, don't output?
         // ok - add label...
         // Firstname, LastName Teacher
         labels.push({teacher:pupil[headers[subject+":teachers"]], group: pupil[headers[subject+":groups"]],
