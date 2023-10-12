@@ -57,7 +57,7 @@
 
   // decode a CSV line - ensure we cope with quotes!
   function decodeCSVLine(line) {
-    var csv = line.split(",");
+    var csv = line.trim().split(",");
     // merge quotes
     for (var i=0;i<csv.length;i++) {
       if (csv[i].startsWith('"') && (csv[i].length==1 || !csv[i].endsWith('"'))) {
