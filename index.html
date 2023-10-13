@@ -135,7 +135,7 @@
         // ok - add label...
         // Firstname, LastName Teacher
         labels.push({teacher:pupil[headers[subject+":teachers"]], group: pupil[headers[subject+":groups"]],
-        html:`<p><b>${escapeHtml(pupil[headers.forename])} ${escapeHtml(pupil[headers.surname])}</b>  Group - ${escapeHtml(pupil[headers[subject+":groups"]])}</p>
+        html:`<p><b>${escapeHtml(pupil[headers.firstname])} ${escapeHtml(pupil[headers.lastname])}</b>  Group - ${escapeHtml(pupil[headers[subject+":groups"]])}</p>
         <p><b>${escapeHtml(shortenTeachers(pupil[headers[subject+":teachers"]]))}</b>  ${escapeHtml(niceSubjectNames[subject])}</p>
         <p>Target - ${escapeHtml(pupil[headers[subject+":target"]])}</p>
         <p>Y10 Predicted Grade - ${escapeHtml(pupil[headers[subject+":predictedgrade"]])}
