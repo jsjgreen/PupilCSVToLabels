@@ -133,13 +133,12 @@
         var teachers = pupil[headers[subject+":teachers"]];
         if (teachers===undefined || teachers=="") return; // if no teachers, don't output?
         // ok - add label...
-        // Firstname, LastName Teacher 
+        // Firstname, LastName Teacher <p>Predicted Grade - coming in December report
         labels.push({teacher:pupil[headers[subject+":teachers"]], group: pupil[headers[subject+":groups"]],
         html:`<p><b>${escapeHtml(pupil[headers.firstname])} ${escapeHtml(pupil[headers.lastname])}</b>  Group - ${escapeHtml(pupil[headers[subject+":groups"]])}</p>
         <p><b>${escapeHtml(shortenTeachers(pupil[headers[subject+":teachers"]]))}</b>  ${escapeHtml(niceSubjectNames[subject])}</p>
         <p>Target - ${escapeHtml(pupil[headers[subject+":target"]])}</p>
-      //  <p>Predicted Grade - coming in December report
-          <p>Predicted Grade - ${escapeHtml(pupil[headers[subject+":predictedgrade"]])}
+        <p>Predicted Grade - ${escapeHtml(pupil[headers[subject+":predictedgrade"]])}
         <br><b>Book Check - </b> Blue <b>☐ | </b>Green <b>☐ |</b> Amber <b>☐ | </b>Red <b>☐</b></p>
         `});
       });
